@@ -6,7 +6,7 @@ import random
 class SlimeVolleyball:
     def __init__(self, parent):
         #canvas variables
-        self.canvas_width = 700 #800
+        self.canvas_width = 800
         self.canvas_height = 500
         self.floor_height = 5
         self.net_height = self.canvas_height/5
@@ -35,9 +35,6 @@ class SlimeVolleyball:
         self.calculated_landing_spot = 0
         #opponent variables
 
-
-
-
         #set up canvas
         self.canvas = Canvas(parent, width=self.canvas_width, height=self.canvas_height, background="grey")
         self.canvas.grid(column=0,row=0)
@@ -54,7 +51,7 @@ class SlimeVolleyball:
 
         #set up net
         self.canvas.create_rectangle(self.net_points[0],self.net_points[1],
-                                     self.net_points[2],self.net_points[3], fill = "black")
+                                     self.net_points[2],self.net_points[3], fill="black")
 
         #add start button
         self.startButton = Button(parent, text="Play", command=self.preLoop)
@@ -67,9 +64,6 @@ class SlimeVolleyball:
         parent.bind('a', self.player.moveCharacter)
         parent.bind('d', self.player.moveCharacter)
         parent.bind('w', self.player.moveCharacter)
-
-        #fixme create players this way
-        #self.canvas.create_arc(100,100,200,200,extent=180,fill="blue")
 
         #add opponent
         opponent_x = self.canvas_width*.25-self.player_size*.5
@@ -117,7 +111,6 @@ class SlimeVolleyball:
                            self.ball_x+self.ball_size, self.ball_y+self.ball_size)
         #update player position
         #if player not on floor
-        #if self.player.center[1] < self.canvas_height - self.floor_height - self.player_size*.5:
         self.player.player_dy += self.player_gravity_strength/self.grav_divisor
         self.player.player_y += self.player.player_dy
         self.player.setCenter()
@@ -172,12 +165,12 @@ class SlimeVolleyball:
             print self.dy
             self.dy *= -1
             self.update_ball_landing_spot_flag = True
-        elif self.collision_handler.checkForPlayerCollision(self.ball_center, self.player.center):
+        elif self.collision_handler.checkForPlayerCollision(True, self.ball_center, self.player.center):
             self.playerHitsBall()
             self.debugWithArt()
             self.update_ball_landing_spot_flag = True
             #return
-        elif self.collision_handler.checkForPlayerCollision(self.ball_center, self.opponent.center):
+        elif self.collision_handler.checkForPlayerCollision(False, self.ball_center, self.opponent.center):
             self.opponentHitsBall()
             self.update_ball_landing_spot_flag = True
 
@@ -201,12 +194,7 @@ class SlimeVolleyball:
         if displacement < 0:
             displacement = 0
         #find final velocity (dy)
-        #vf = math.sqrt(2ad+vo^2)
         dy_final = math.sqrt(2*actual_grav*displacement+abs(self.dy)**2)
-        #solve for "time"
-        #vf = v0 + at
-        #acceleration in pixels per loop
-        #t = (vf - v0)/a
         time_to_apex_and_back = 0
         if self.dy < 0:
             time_to_apex_and_back = (-self.dy - self.dy)/float(actual_grav)

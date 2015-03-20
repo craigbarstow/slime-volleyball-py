@@ -11,6 +11,8 @@ class CollisionHandler:
         self.ball_size = ball_size
         self.ball_radius = ball_size*.5
         self.player_radius = player_size*.5
+        self.prev_player_collision_distance = 0
+        self.prev_opponent_collision_distance = 0
 
     def ballHitFloor(self, ball_center_y):
         #fixme Ball can escape down net and out through floor
@@ -50,13 +52,31 @@ class CollisionHandler:
         else:
             return False
 
-    def checkForPlayerCollision(self, ball_center, player_center):
+    def checkForPlayerCollision(self, player, ball_center, player_center):
+        #FIXME store previous distance between centers, if new distance b/w centers is > old one, assume collision
+        #has already happened and return false
         distance = math.sqrt((ball_center[0]-player_center[0])**2+
                         (ball_center[1]-player_center[1])**2)
-        if distance < self.ball_radius+self.player_radius and ball_center > player_center[1]:
+        if self.distance_decreasing(player, distance) and distance < self.ball_radius+self.player_radius and ball_center > player_center[1]:
             return True
         else:
             return False
+
+    def distance_decreasing(self, player, distance):
+        if player:
+            if distance < self.prev_player_collision_distance:
+                self.prev_player_collision_distance = distance
+                return True
+            else:
+                self.prev_player_collision_distance = distance
+                return False
+        else:
+            if distance < self.prev_opponent_collision_distance:
+                self.prev_opponent_collision_distance = distance
+                return True
+            else:
+                self.prev_opponent_collision_distance = distance
+                return False
 
     def checkForPlayerFloorCollision(self, player_center_y):
         if player_center_y > self.canvas_height - self.floor_height:
